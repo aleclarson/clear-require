@@ -7,13 +7,21 @@ var clear = module.exports = function (moduleId) {
 	if (typeof moduleId !== 'string') {
 		throw new TypeError('Expected a string');
 	}
-	clear(callerPath(), moduleId);
+	if (path.isAbsolute(moduleId)) {
+		delete require.cache[moduleId];
+	} else {
+		clear(callerPath(), moduleId);
+	}
 };
 
 clear.all = function () {
 	var caller = callerPath();
 	Object.keys(require.cache).forEach(function(moduleId) {
-		clear(caller, moduleId);
+		if (path.isAbsolute(moduleId)) {
+			delete require.cache[moduleId];
+		} else {
+			clear(caller, moduleId);
+		}
 	});
 };
 
